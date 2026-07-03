@@ -179,8 +179,8 @@ def cambiar_transformacion(seleccion):
 
 # --- FUNCIONES DE GRÁFICO ---
 def crear_bloque_eje(parent, titulo_frame, columnas_disponibles,
-                      clave_col, clave_label, clave_rot, clave_ticks, clave_inv,
-                      indice_fallback=0):
+                     clave_col, clave_label, clave_rot, clave_ticks, clave_inv,
+                     indice_fallback=0):
     
     frame_eje = tk.LabelFrame(parent, text=titulo_frame, font=("gothic", 10, "bold"),
                                bg="#F0F0F0", padx=10, pady=10)
@@ -209,19 +209,26 @@ def crear_bloque_eje(parent, titulo_frame, columnas_disponibles,
         var_label.set(var_col.get())
     var_col.trace_add("write", actualizar_label)
 
-    f_opts = tk.Frame(frame_eje, bg="#F0F0F0")
-    f_opts.pack(fill=tk.X)
-    tk.Label(f_opts, text="Inclinación (°):", bg="#F0F0F0", font=FUENTE_ETIQUETAS).pack(side=tk.LEFT)
+    # --- NUEVO: Dividimos las opciones en dos filas (Frames) ---
+    f_opts_top = tk.Frame(frame_eje, bg="#F0F0F0")
+    f_opts_top.pack(fill=tk.X, pady=(0, 5))
+
+    f_opts_bottom = tk.Frame(frame_eje, bg="#F0F0F0")
+    f_opts_bottom.pack(fill=tk.X)
+
+    # Fila 1: Inclinación y Nº de Etiquetas
+    tk.Label(f_opts_top, text="Inclinación (°):", bg="#F0F0F0", font=FUENTE_ETIQUETAS).pack(side=tk.LEFT)
     var_rot = tk.StringVar(value=estado_grafico[clave_rot])
-    tk.Entry(f_opts, textvariable=var_rot, font=FUENTE_ETIQUETAS, width=5).pack(side=tk.LEFT, padx=5)
+    tk.Entry(f_opts_top, textvariable=var_rot, font=FUENTE_ETIQUETAS, width=5).pack(side=tk.LEFT, padx=5)
 
-    tk.Label(f_opts, text="Nº Etiquetas (0=Auto):", bg="#F0F0F0", font=FUENTE_ETIQUETAS).pack(side=tk.LEFT, padx=(5, 0))
+    tk.Label(f_opts_top, text="Nº Etiquetas (0=Auto):", bg="#F0F0F0", font=FUENTE_ETIQUETAS).pack(side=tk.LEFT, padx=(15, 0))
     var_ticks = tk.StringVar(value=estado_grafico[clave_ticks])
-    tk.Entry(f_opts, textvariable=var_ticks, font=FUENTE_ETIQUETAS, width=5).pack(side=tk.LEFT, padx=5)
+    tk.Entry(f_opts_top, textvariable=var_ticks, font=FUENTE_ETIQUETAS, width=5).pack(side=tk.LEFT, padx=5)
 
+    # Fila 2: Invertir eje
     var_inv = tk.BooleanVar(value=estado_grafico[clave_inv])
-    tk.Checkbutton(f_opts, text="Invertir eje", variable=var_inv, bg="#F0F0F0",
-                   font=FUENTE_ETIQUETAS).pack(side=tk.LEFT, padx=(5, 0))
+    tk.Checkbutton(f_opts_bottom, text="Invertir eje", variable=var_inv, bg="#F0F0F0",
+                   font=FUENTE_ETIQUETAS).pack(side=tk.LEFT)
 
     return var_col, var_label, var_rot, var_ticks, var_inv
 
