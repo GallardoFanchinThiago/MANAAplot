@@ -1,0 +1,39 @@
+name: Compilar Ejecutables MANAAplot
+
+on:
+  push:
+    branches: [ "main", "master" ] # Se ejecuta al hacer push a estas ramas
+  workflow_dispatch: # Agrega un botón para ejecutarlo manualmente cuando quieras
+
+jobs:
+  build:
+    name: Compilar en ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # Aquí le decimos que queremos compilar en Windows y Linux
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+    - name: Descargar el código del repositorio
+      uses: actions/checkout@v4
+
+    - name: Configurar Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas numpy matplotlib pyinstaller
+
+    - name: Compilar con PyInstaller
+      run: |
+        pyinstaller --noconsole --onefile --hidden-import PIL._tkinter_finder maanaplot.py
+
+    - name: Subir los ejecutables generados
+      uses: actions/upload-artifact@v4
+      with:
+        name: MANAAplot-Ejecutable-${{ runner.os }}
+        path: dist/*
