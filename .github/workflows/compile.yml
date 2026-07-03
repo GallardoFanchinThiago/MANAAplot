@@ -34,11 +34,11 @@ jobs:
 
     - name: Generar y parchear archivo .spec (Límite de Recursividad)
       run: |
-        pyi-makespec --noconsole --onefile --hidden-import PIL._tkinter_finder maanaplot.py
-        python -c "import sys; lines = open('maanaplot.spec').readlines(); lines.insert(0, 'import sys\nsys.setrecursionlimit(5000)\n'); open('maanaplot.spec', 'w').writelines(lines)"
+        pyi-makespec --noconsole --onefile --hidden-import PIL._tkinter_finder manaaplot.py
+        python -c "import sys; lines = open('maanaplot.spec').readlines(); lines.insert(0, 'import sys\nsys.setrecursionlimit(5000)\n'); open('manaaplot.spec', 'w').writelines(lines)"
 
     - name: Compilar con PyInstaller
-      run: pyinstaller maanaplot.spec
+      run: pyinstaller manaaplot.spec
 
     - name: Subir los ejecutables generados
       uses: actions/upload-artifact@v4
