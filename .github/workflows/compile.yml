@@ -44,7 +44,7 @@ jobs:
     - name: Compilar con PyInstaller
       run: pyinstaller manaaplot.spec
     - name: Subir los ejecutables generados
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: MANAAplot-Ejecutable-${{ runner.os }}
         path: dist/*
