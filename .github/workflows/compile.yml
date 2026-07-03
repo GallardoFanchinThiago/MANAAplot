@@ -13,9 +13,9 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
     - name: Descargar el código del repositorio
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     - name: Configurar Python 3.12
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.12'
     - name: Instalar dependencias de Linux (Solo Ubuntu)
@@ -44,7 +44,7 @@ jobs:
     - name: Compilar con PyInstaller
       run: pyinstaller manaaplot.spec
     - name: Subir los ejecutables generados
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: MANAAplot-Ejecutable-${{ runner.os }}
         path: dist/*
