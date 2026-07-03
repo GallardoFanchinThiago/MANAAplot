@@ -2,16 +2,16 @@ name: Compilar Ejecutables MANAAplot
 
 on:
   push:
-    branches: [ "main", "master" ] # Se ejecuta al hacer push a estas ramas
-  workflow_dispatch: # Agrega un botón para ejecutarlo manualmente cuando quieras
+    branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
     name: Compilar en ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false # <-- NUEVO: Evita que Windows se cancele si Linux falla (o viceversa)
       matrix:
-        # Aquí le decimos que queremos compilar en Windows y Linux
         os: [ubuntu-latest, windows-latest]
 
     steps:
@@ -23,16 +23,30 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Instalar dependencias
+    - name: Instalar dependencias de Linux (Solo Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      # NUEVO: Instala Tkinter a nivel sistema para evitar errores de renderizado
+      run: sudo apt-get update && sudo apt-get install -y python3-tk
+
+    - name: Instalar dependencias de Python
       run: |
         python -m pip install --upgrade pip
         pip install pandas numpy matplotlib pyinstaller
 
-    - name: Compilar con PyInstaller
+    - name: Generar y parchear archivo .spec (Límite de Recursividad)
+      # NUEVO: Genera el .spec e inyecta el código para subir el límite a 5000 usando Python
       run: |
-        pyinstaller --noconsole --onefile --hidden-import PIL._tkinter_finder maanaplot.py
+        pyi-makespec --noconsole --onefile --hidden-import PIL._tkinter_finder maanaplot.py
+        python -c "import sys; lines = open('maanaplot.spec').readlines(); lines.insert(0, 'import sys\nsys.setrecursionlimit(5000)\n'); open('maanaplot.spec', 'w').writelines(lines)"
+
+    - name: Compilar con PyInstaller
+      run: pyinstaller maanaplot.spec
 
     - name: Subir los ejecutables generados
+      uses: actions/upload-artifact@v4
+      with:
+        name: MANAAplot-Ejecutable-${{ runner.os }}
+        path: dist/*
       uses: actions/upload-artifact@v4
       with:
         name: MANAAplot-Ejecutable-${{ runner.os }}
