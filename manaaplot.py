@@ -18,7 +18,7 @@ datos_memoria = {
 }
 
 configuracion_app = {
-    "titulo_default": "Mi Gráfico",
+    "titulo_default": "Gráfico",
     "mostrar_grid": True,
     "mostrar_leyenda": False,
     "redondeo_decimal": 2,
@@ -158,13 +158,13 @@ def cambiar_transformacion(seleccion):
         var_transformacion.set("Crudo")
         return
     try:
-        if seleccion == "Ráfaga":
+        if seleccion == "Procesado":
             var_estado.set("Calculando ráfagas...")
             root.update()
             if datos_memoria["rafaga"] is None:
                 datos_memoria["rafaga"] = cargarafaga(datos_memoria["crudo"])
             mostrar_en_tabla(datos_memoria["rafaga"])
-            var_estado.set(f"Éxito: Transformado a Ráfaga ({len(datos_memoria['rafaga'])} filas)")
+            var_estado.set(f"Éxito: Procesado ({len(datos_memoria['rafaga'])} filas)")
 
         elif seleccion == "Crudo":
             var_estado.set("Cargando datos crudos...")
@@ -243,7 +243,7 @@ def abrir_config_grafico():
     if estado_actual == "Crudo":
         respuesta = messagebox.askyesno(
             "Advertencia de Modo",
-            "Este gráfico está pensado para el modo Ráfaga.\n\n¿Configurar gráfico igualmente?"
+            "Este gráfico está pensado para el modo Procesado.\n\n¿Configurar gráfico igualmente?"
         )
         if not respuesta:
             return
@@ -456,7 +456,7 @@ def abrir_propiedades():
         estado_actual = var_transformacion.get()
         if estado_actual == "Crudo" and datos_memoria["crudo"] is not None:
             mostrar_en_tabla(datos_memoria["crudo"])
-        elif estado_actual == "Ráfaga" and datos_memoria["rafaga"] is not None:
+        elif estado_actual == "Procesado" and datos_memoria["rafaga"] is not None:
             mostrar_en_tabla(datos_memoria["rafaga"])
 
         ventana_prop.destroy()
@@ -494,7 +494,7 @@ btn2 = tk.Button(button_frame, text="Elegir archivo", command=cargar_csv, **btn_
 btn2.pack(side=tk.LEFT, padx=(10, 0))
 
 var_transformacion = tk.StringVar(value="Crudo")
-opciones_transformacion = ["Crudo", "Ráfaga"]
+opciones_transformacion = ["Crudo", "Procesado"]
 
 menu_transformar = tk.OptionMenu(button_frame, var_transformacion, *opciones_transformacion, command=cambiar_transformacion)
 menu_transformar.config(
