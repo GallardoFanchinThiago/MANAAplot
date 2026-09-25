@@ -19,7 +19,6 @@ datos_memoria = {
 configuracion_app = {
     "titulo_default": "Gráfico",
     "mostrar_grid": True,
-    "mostrar_leyenda": False,
     "redondeo_decimal": 2,
     "mostrar_secundarias": False
 }
@@ -423,7 +422,6 @@ def abrir_propiedades():
         configuracion_app.update({
             "titulo_default": var_tit_def.get(),
             "mostrar_grid": var_grid.get(),
-            "mostrar_leyenda": var_leyenda.get(),
             "redondeo_decimal": var_redondeo.get(),
             "mostrar_secundarias": var_secundarias.get()
         })
