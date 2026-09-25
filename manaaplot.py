@@ -9,6 +9,8 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.ticker import MaxNLocator
 
+version = 0.3
+
 datos_memoria = {
     "crudo": None,
     "rafaga": None
@@ -441,7 +443,7 @@ def abrir_propiedades():
     btn_aceptar.pack(side=tk.BOTTOM)
 
 root = tk.Tk()
-root.title("MANAAplot v0.2 alpha")
+root.title(f"MANAAplot v{version} alpha")
 root.geometry("800x600")
 root.configure(bg="#F0F0F0")
 
