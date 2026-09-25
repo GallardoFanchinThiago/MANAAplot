@@ -9,9 +9,6 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.ticker import MaxNLocator
 
-
-# --- 0. Variables globales para memoria y configuración ---
-
 datos_memoria = {
     "crudo": None,
     "rafaga": None
@@ -43,15 +40,12 @@ estado_grafico = {
 COLUMNAS_SECUNDARIAS = ("rafaga_n", "delta_td", "datos_n")
 FUENTE_ETIQUETAS = ("gothic", 10)
 
-
-
 def parse_float(valor, defecto=0.0):
     """Convierte a float de forma segura; devuelve `defecto` si no es válido."""
     try:
         return float(valor)
     except (TypeError, ValueError):
         return defecto
-
 
 def parse_ticks(valor):
     """Convierte a entero positivo (para nº de etiquetas); None si no aplica."""
@@ -60,7 +54,6 @@ def parse_ticks(valor):
         return n if n > 0 else None
     except (TypeError, ValueError):
         return None
-
 
 def cargaraw(raw):
     dfr = pd.read_csv(raw)
@@ -77,7 +70,6 @@ def cargaraw(raw):
     dfr["delta_td"] = dfr["fecha_hora_dt"].diff().fillna(pd.Timedelta(0))
     dfr["rafaga_n"] = (dfr["delta_td"] > pd.Timedelta(1, "s")).cumsum()
     return dfr
-
 
 def cargarafaga(burst):
     dfr = burst.copy()
@@ -99,7 +91,6 @@ def cargarafaga(burst):
     dfr = dfr.groupby("rafaga_n").agg(filtro).reset_index()
     return dfr
 
-
 def mostrar_en_tabla(df):
     tree.delete(*tree.get_children())
 
@@ -116,7 +107,6 @@ def mostrar_en_tabla(df):
         tree.heading(col, text=str(col).upper())
         tree.column(col, width=120, anchor='center')
 
-    # Redondeo solo para visualización
     decimales = configuracion_app["redondeo_decimal"]
     columnas_float = df_mostrar.select_dtypes(include=['float64', 'float32']).columns
     if len(columnas_float):
@@ -151,7 +141,6 @@ def cargar_csv():
         var_estado.set(error_msg)
         messagebox.showerror("Error", error_msg)
 
-
 def cambiar_transformacion(seleccion):
     if datos_memoria["crudo"] is None:
         var_estado.set("Aviso: Primero debes cargar un archivo.")
@@ -176,8 +165,6 @@ def cambiar_transformacion(seleccion):
         var_estado.set(error_msg)
         messagebox.showerror("Error", error_msg)
 
-
-# --- FUNCIONES DE GRÁFICO ---
 def crear_bloque_eje(parent, titulo_frame, columnas_disponibles,
                      clave_col, clave_label, clave_rot, clave_ticks, clave_inv,
                      indice_fallback=0):
@@ -209,29 +196,25 @@ def crear_bloque_eje(parent, titulo_frame, columnas_disponibles,
         var_label.set(var_col.get())
     var_col.trace_add("write", actualizar_label)
 
-    # --- NUEVO: Dividimos las opciones en dos filas (Frames) ---
     f_opts_top = tk.Frame(frame_eje, bg="#F0F0F0")
     f_opts_top.pack(fill=tk.X, pady=(0, 5))
 
     f_opts_bottom = tk.Frame(frame_eje, bg="#F0F0F0")
     f_opts_bottom.pack(fill=tk.X)
 
-    # Fila 1: Inclinación y Nº de Etiquetas
     tk.Label(f_opts_top, text="Inclinación (°):", bg="#F0F0F0", font=FUENTE_ETIQUETAS).pack(side=tk.LEFT)
     var_rot = tk.StringVar(value=estado_grafico[clave_rot])
     tk.Entry(f_opts_top, textvariable=var_rot, font=FUENTE_ETIQUETAS, width=5).pack(side=tk.LEFT, padx=5)
 
-    tk.Label(f_opts_top, text="Nº Etiquetas (0=Auto):", bg="#F0F0F0", font=FUENTE_ETIQUETAS).pack(side=tk.LEFT, padx=(15, 0))
+    tk.Label(f_opts_top, text="Nº Intervalos (0=Auto):", bg="#F0F0F0", font=FUENTE_ETIQUETAS).pack(side=tk.LEFT, padx=(15, 0))
     var_ticks = tk.StringVar(value=estado_grafico[clave_ticks])
     tk.Entry(f_opts_top, textvariable=var_ticks, font=FUENTE_ETIQUETAS, width=5).pack(side=tk.LEFT, padx=5)
 
-    # Fila 2: Invertir eje
     var_inv = tk.BooleanVar(value=estado_grafico[clave_inv])
     tk.Checkbutton(f_opts_bottom, text="Invertir eje", variable=var_inv, bg="#F0F0F0",
                    font=FUENTE_ETIQUETAS).pack(side=tk.LEFT)
 
     return var_col, var_label, var_rot, var_ticks, var_inv
-
 
 def abrir_config_grafico():
     if datos_memoria["crudo"] is None:
@@ -269,7 +252,6 @@ def abrir_config_grafico():
         if color:
             var_color.set(color)
 
-    # --- APARTADO 1: GENERAL ---
     frame_general = tk.LabelFrame(vent_conf, text="General", font=("gothic", 10, "bold"),
                                    bg="#F0F0F0", padx=10, pady=10)
     frame_general.pack(fill=tk.X, padx=15, pady=5)
@@ -295,7 +277,6 @@ def abrir_config_grafico():
     tk.Radiobutton(f_tipo, text="Dispersión", variable=var_tipo_grafico, value="Dispersión",
                    bg="#F0F0F0", font=FUENTE_ETIQUETAS).pack(side=tk.LEFT)
 
-    # --- APARTADOS 2 y 3: VARIABLES X e Y (ahora vía función común) ---
     var_col_x, var_label_x, var_rot_x, var_ticks_x, var_inv_x = crear_bloque_eje(
         vent_conf, "Variable X (Eje Horizontal)", columnas_disponibles,
         "col_x", "label_x", "rot_x", "ticks_x", "inv_x", indice_fallback=0
@@ -305,7 +286,6 @@ def abrir_config_grafico():
         "col_y", "label_y", "rot_y", "ticks_y", "inv_y", indice_fallback=1
     )
 
-    # --- BOTÓN DE GENERAR ---
     btn_generar = tk.Button(
         vent_conf, text="Generar Gráfico",
         command=lambda: generar_grafico_personalizado(
@@ -320,7 +300,6 @@ def abrir_config_grafico():
         font=("gothic", 11, "bold"), bg="#D0D0D0", pady=5
     )
     btn_generar.pack(fill=tk.X, padx=15, pady=15)
-
 
 def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, color_hex,
                                    rot_x, ticks_x, inv_x, rot_y, ticks_y, inv_y,
@@ -403,8 +382,6 @@ def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, c
         var_estado.set(error_msg)
         messagebox.showerror("Error de Gráfico", error_msg)
 
-
-# --- PROPIEDADES ---
 def abrir_propiedades():
     ventana_prop = tk.Toplevel(root)
     ventana_prop.title("Propiedades")
@@ -426,10 +403,6 @@ def abrir_propiedades():
 
     var_grid = tk.BooleanVar(value=configuracion_app["mostrar_grid"])
     tk.Checkbutton(marco_opciones, text="Mostrar cuadrícula (Grid)", variable=var_grid,
-                   bg="#F0F0F0", font=("Arial", 10)).pack(anchor="w", pady=2)
-
-    var_leyenda = tk.BooleanVar(value=configuracion_app["mostrar_leyenda"])
-    tk.Checkbutton(marco_opciones, text="Mostrar leyenda", variable=var_leyenda,
                    bg="#F0F0F0", font=("Arial", 10)).pack(anchor="w", pady=2)
 
     var_secundarias = tk.BooleanVar(value=configuracion_app["mostrar_secundarias"])
@@ -467,7 +440,6 @@ def abrir_propiedades():
     )
     btn_aceptar.pack(side=tk.BOTTOM)
 
-# CREACIÓN DE LA INTERFAZ PRINCIPAL
 root = tk.Tk()
 root.title("MANAAplot v0.2 alpha")
 root.geometry("800x600")
