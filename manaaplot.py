@@ -349,63 +349,9 @@ def abrir_config_grafico():
 def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, color_hex,
                                    rot_x, ticks_x, inv_x, rot_y, ticks_y, inv_y,
                                    tipo_grafico, min_x, max_x, min_y, max_y, vent_padre):
-    
-    estado_grafico.update({
-        "color": color_hex,
-        "tipo": tipo_grafico,
-        "col_x": col_x,
-        "label_x": label_x,
-        "rot_x": rot_x,
-        "ticks_x": ticks_x,
-        "inv_x": inv_x,
-        "min_x": min_x,
-        "max_x": max_x,
-        "col_y": col_y,
-        "label_y": label_y,
-        "rot_y": rot_y,
-        "ticks_y": ticks_y,
-        "inv_y": inv_y,
-        "min_y": min_y,
-        "max_y": max_y
-    })
 
+    # Validar los límites antes de cerrar la ventana de configuración.
     try:
-        vent_padre.destroy()
-        var_estado.set(f"Generando gráfico: {col_y} vs {col_x}...")
-        root.update()
-
-        ventana_graf = tk.Toplevel(root)
-        ventana_graf.title(f"Gráfico: {titulo}")
-        ventana_graf.geometry("850x600")
-        ventana_graf.configure(bg="#F0F0F0")
-
-        fig = Figure(figsize=(16 * 2 / 3, 9 * 2 / 3), dpi=100)
-        ax = fig.add_subplot(111)
-
-        t = dfr[col_x]
-        h = dfr[col_y]
-
-        if tipo_grafico == "Dispersión":
-            ax.scatter(t, h, color=color_hex, s=15, alpha=0.8)
-        else:
-            ax.plot(t, h, linewidth=0.5, color=color_hex)
-
-        ax.set_xlabel(label_x)
-        ax.set_ylabel(label_y)
-        ax.set_title(titulo)
-
-        ax.tick_params(axis='x', rotation=parse_float(rot_x, 0))
-        ax.tick_params(axis='y', rotation=parse_float(rot_y, 0))
-
-        n_ticks_x = parse_ticks(ticks_x)
-        if n_ticks_x:
-            ax.xaxis.set_major_locator(MaxNLocator(n_ticks_x))
-
-        n_ticks_y = parse_ticks(ticks_y)
-        if n_ticks_y:
-            ax.yaxis.set_major_locator(MaxNLocator(n_ticks_y))
-
-            try:
         limites = {
             "mínimo de X": min_x,
             "máximo de X": max_x,
@@ -440,6 +386,109 @@ def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, c
             str(e),
             parent=vent_padre
         )
+        return
+
+    # Guardar la configuración seleccionada.
+    estado_grafico.update({
+        "color": color_hex,
+        "tipo": tipo_grafico,
+        "col_x": col_x,
+        "label_x": label_x,
+        "rot_x": rot_x,
+        "ticks_x": ticks_x,
+        "inv_x": inv_x,
+        "min_x": min_x,
+        "max_x": max_x,
+        "col_y": col_y,
+        "label_y": label_y,
+        "rot_y": rot_y,
+        "ticks_y": ticks_y,
+        "inv_y": inv_y,
+        "min_y": min_y,
+        "max_y": max_y
+    })
+
+    try:
+        vent_padre.destroy()
+
+        var_estado.set(f"Generando gráfico: {col_y} vs {col_x}...")
+        root.update()
+
+        ventana_graf = tk.Toplevel(root)
+        ventana_graf.title(f"Gráfico: {titulo}")
+        ventana_graf.geometry("850x600")
+        ventana_graf.configure(bg="#F0F0F0")
+
+        fig = Figure(figsize=(16 * 2 / 3, 9 * 2 / 3), dpi=100)
+        ax = fig.add_subplot(111)
+
+        t = dfr[col_x]
+        h = dfr[col_y]
+
+        if tipo_grafico == "Dispersión":
+            ax.scatter(t, h, color=color_hex, s=15, alpha=0.8)
+        else:
+            ax.plot(t, h, linewidth=0.5, color=color_hex)
+
+        ax.set_xlabel(label_x)
+        ax.set_ylabel(label_y)
+        ax.set_title(titulo)
+
+        ax.tick_params(axis="x", rotation=parse_float(rot_x, 0))
+        ax.tick_params(axis="y", rotation=parse_float(rot_y, 0))
+
+        n_ticks_x = parse_ticks(ticks_x)
+        if n_ticks_x:
+            ax.xaxis.set_major_locator(MaxNLocator(n_ticks_x))
+
+        n_ticks_y = parse_ticks(ticks_y)
+        if n_ticks_y:
+            ax.yaxis.set_major_locator(MaxNLocator(n_ticks_y))
+
+        # Aplicar los límites manuales del eje X.
+        # Si un campo está vacío, Matplotlib conserva el límite automático.
+        if min_x.strip() or max_x.strip():
+            ax.set_xlim(
+                left=float(min_x) if min_x.strip() else None,
+                right=float(max_x) if max_x.strip() else None
+            )
+
+        # Aplicar los límites manuales del eje Y.
+        if min_y.strip() or max_y.strip():
+            ax.set_ylim(
+                bottom=float(min_y) if min_y.strip() else None,
+                top=float(max_y) if max_y.strip() else None
+            )
+
+        if inv_x:
+            ax.invert_xaxis()
+
+        if inv_y:
+            ax.invert_yaxis()
+
+        if configuracion_app["mostrar_grid"]:
+            ax.grid(True, axis="both", linewidth=0.5, linestyle="--")
+
+        fig.tight_layout()
+
+        canvas = FigureCanvasTkAgg(fig, master=ventana_graf)
+        canvas.draw()
+
+        toolbar_frame = tk.Frame(ventana_graf, bg="#F0F0F0")
+        toolbar_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+        toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
+        toolbar.update()
+
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+        var_estado.set("Gráfico generado con éxito.")
+
+    except Exception as e:
+        error_msg = f"Error al graficar (revisa el Color o los Datos): {e}"
+        var_estado.set(error_msg)
+        messagebox.showerror("Error de Gráfico", error_msg)
+        
         return
 
         if inv_x:
