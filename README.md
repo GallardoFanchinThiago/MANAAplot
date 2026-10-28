@@ -1,3 +1,12 @@
+# MANAAplot
+
+*Medidor Automático de Nivel de Agua en Arroyos*
+
+| Sistema operativo | Descarga |
+| - | - |
+| Linux (x86-64) | [Versión linux-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-linux-beta) |
+| Windows (x86-64 | [Versión windows-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-windows-beta.exe) |
+
 GUÍA PARA EL USUARIO
 1. Formato de archivos
    Formato txt: El archivo a introducir debe ser un .txt o .csv con las siguientes columnas en orden obligatorio independientemente del nombre: Fecha-hora (1), distancia (2),
