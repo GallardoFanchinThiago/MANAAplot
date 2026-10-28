@@ -275,9 +275,10 @@ def abrir_config_grafico():
 
     vent_conf = tk.Toplevel(root)
     vent_conf.title("Configuración del Gráfico")
-    vent_conf.geometry("480x750")
+    vent_conf.geometry("520x850")
+    vent_conf.minsize(520, 650)
     vent_conf.configure(bg="#F0F0F0")
-    vent_conf.resizable(False, False)
+    vent_conf.resizable(True, True)
     vent_conf.transient(root)
     vent_conf.grab_set()
 
@@ -346,11 +347,12 @@ def abrir_config_grafico():
     )
     btn_generar.pack(fill=tk.X, padx=15, pady=15)
 
-def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, color_hex,
-                                   rot_x, ticks_x, inv_x, rot_y, ticks_y, inv_y,
-                                   tipo_grafico, min_x, max_x, min_y, max_y, vent_padre):
-
-    # Validar los límites antes de cerrar la ventana de configuración.
+def generar_grafico_personalizado(
+    dfr, col_x, col_y, titulo, label_x, label_y, color_hex,
+    rot_x, ticks_x, inv_x, rot_y, ticks_y, inv_y,
+    tipo_grafico, min_x, max_x, min_y, max_y, vent_padre
+):
+    # 1. Validar los límites antes de cerrar la ventana de configuración.
     try:
         limites = {
             "mínimo de X": min_x,
@@ -388,7 +390,7 @@ def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, c
         )
         return
 
-    # Guardar la configuración seleccionada.
+    # 2. Guardar la configuración seleccionada.
     estado_grafico.update({
         "color": color_hex,
         "tipo": tipo_grafico,
@@ -408,6 +410,7 @@ def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, c
         "max_y": max_y
     })
 
+    # 3. Crear el gráfico.
     try:
         vent_padre.destroy()
 
@@ -430,13 +433,16 @@ def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, c
         else:
             ax.plot(t, h, linewidth=0.5, color=color_hex)
 
+        # Etiquetas y título.
         ax.set_xlabel(label_x)
         ax.set_ylabel(label_y)
         ax.set_title(titulo)
 
+        # Inclinación de las etiquetas.
         ax.tick_params(axis="x", rotation=parse_float(rot_x, 0))
         ax.tick_params(axis="y", rotation=parse_float(rot_y, 0))
 
+        # Número de intervalos.
         n_ticks_x = parse_ticks(ticks_x)
         if n_ticks_x:
             ax.xaxis.set_major_locator(MaxNLocator(n_ticks_x))
@@ -445,32 +451,41 @@ def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, c
         if n_ticks_y:
             ax.yaxis.set_major_locator(MaxNLocator(n_ticks_y))
 
-        # Aplicar los límites manuales del eje X.
-        # Si un campo está vacío, Matplotlib conserva el límite automático.
+        # 4. Aplicar límites manuales del eje X.
+        # Los campos vacíos conservan los límites automáticos.
         if min_x.strip() or max_x.strip():
             ax.set_xlim(
                 left=float(min_x) if min_x.strip() else None,
                 right=float(max_x) if max_x.strip() else None
             )
 
-        # Aplicar los límites manuales del eje Y.
+        # 5. Aplicar límites manuales del eje Y.
         if min_y.strip() or max_y.strip():
             ax.set_ylim(
                 bottom=float(min_y) if min_y.strip() else None,
                 top=float(max_y) if max_y.strip() else None
             )
 
+        # 6. Invertir los ejes si se ha solicitado.
         if inv_x:
             ax.invert_xaxis()
 
         if inv_y:
             ax.invert_yaxis()
 
+        # 7. Cuadrícula.
         if configuracion_app["mostrar_grid"]:
-            ax.grid(True, axis="both", linewidth=0.5, linestyle="--")
+            ax.grid(
+                True,
+                axis="both",
+                linewidth=0.5,
+                linestyle="--"
+            )
 
+        # 8. Ajustar el diseño.
         fig.tight_layout()
 
+        # 9. Integrar Matplotlib en Tkinter.
         canvas = FigureCanvasTkAgg(fig, master=ventana_graf)
         canvas.draw()
 
@@ -480,42 +495,24 @@ def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, c
         toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
         toolbar.update()
 
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        canvas.get_tk_widget().pack(
+            side=tk.TOP,
+            fill=tk.BOTH,
+            expand=True
+        )
 
         var_estado.set("Gráfico generado con éxito.")
 
     except Exception as e:
-        error_msg = f"Error al graficar (revisa el Color o los Datos): {e}"
+        error_msg = (
+            f"Error al graficar (revisa el Color o los Datos): {e}"
+        )
         var_estado.set(error_msg)
-        messagebox.showerror("Error de Gráfico", error_msg)
-        
-        return
 
-        if inv_x:
-            ax.invert_xaxis()
-        if inv_y:
-            ax.invert_yaxis()
-
-        if configuracion_app["mostrar_grid"]:
-            ax.grid(True, axis="both", linewidth=0.5, linestyle="--")
-
-        fig.tight_layout()
-
-        canvas = FigureCanvasTkAgg(fig, master=ventana_graf)
-        canvas.draw()
-
-        toolbar_frame = tk.Frame(ventana_graf, bg="#F0F0F0")
-        toolbar_frame.pack(side=tk.BOTTOM, fill=tk.X)
-        toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
-        toolbar.update()
-
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        var_estado.set("Gráfico generado con éxito.")
-
-    except Exception as e:
-        error_msg = f"Error al graficar (revisa el Color o los Datos): {e}"
-        var_estado.set(error_msg)
-        messagebox.showerror("Error de Gráfico", error_msg)
+        messagebox.showerror(
+            "Error de Gráfico",
+            error_msg
+        )
 
 def abrir_propiedades():
     ventana_prop = tk.Toplevel(root)
