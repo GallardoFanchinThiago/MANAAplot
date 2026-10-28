@@ -31,11 +31,15 @@ estado_grafico = {
     "rot_x": "0",
     "ticks_x": "0",
     "inv_x": False,
+    "min_x": "",
+    "max_x": "",
     "col_y": None,
     "label_y": None,
     "rot_y": "0",
     "ticks_y": "0",
-    "inv_y": False
+    "inv_y": False,
+    "min_y": "",
+    "max_y": ""
 }
 
 COLUMNAS_SECUNDARIAS = ("rafaga_n", "delta_td", "datos_n")
@@ -168,7 +172,7 @@ def cambiar_transformacion(seleccion):
 
 def crear_bloque_eje(parent, titulo_frame, columnas_disponibles,
                      clave_col, clave_label, clave_rot, clave_ticks, clave_inv,
-                     indice_fallback=0):
+                     clave_min, clave_max, indice_fallback=0):
     
     frame_eje = tk.LabelFrame(parent, text=titulo_frame, font=("gothic", 10, "bold"),
                                bg="#F0F0F0", padx=10, pady=10)
@@ -215,7 +219,36 @@ def crear_bloque_eje(parent, titulo_frame, columnas_disponibles,
     tk.Checkbutton(f_opts_bottom, text="Invertir eje", variable=var_inv, bg="#F0F0F0",
                    font=FUENTE_ETIQUETAS).pack(side=tk.LEFT)
 
-    return var_col, var_label, var_rot, var_ticks, var_inv
+    # Límites del eje
+    f_limites = tk.Frame(frame_eje, bg="#F0F0F0")
+    f_limites.pack(fill=tk.X, pady=(8, 0))
+
+    tk.Label(
+        f_limites, text="Mínimo:", bg="#F0F0F0",
+        font=FUENTE_ETIQUETAS
+    ).pack(side=tk.LEFT)
+
+    var_min = tk.StringVar(value=estado_grafico[clave_min])
+    tk.Entry(
+        f_limites, textvariable=var_min,
+        font=FUENTE_ETIQUETAS, width=10
+    ).pack(side=tk.LEFT, padx=5)
+
+    tk.Label(
+        f_limites, text="Máximo:", bg="#F0F0F0",
+        font=FUENTE_ETIQUETAS
+    ).pack(side=tk.LEFT, padx=(10, 0))
+
+    var_max = tk.StringVar(value=estado_grafico[clave_max])
+    tk.Entry(
+        f_limites, textvariable=var_max,
+        font=FUENTE_ETIQUETAS, width=10
+    ).pack(side=tk.LEFT, padx=5)
+
+    return (
+        var_col, var_label, var_rot, var_ticks, var_inv,
+        var_min, var_max
+    )
 
 def abrir_config_grafico():
     if datos_memoria["crudo"] is None:
@@ -278,13 +311,22 @@ def abrir_config_grafico():
     tk.Radiobutton(f_tipo, text="Dispersión", variable=var_tipo_grafico, value="Dispersión",
                    bg="#F0F0F0", font=FUENTE_ETIQUETAS).pack(side=tk.LEFT)
 
-    var_col_x, var_label_x, var_rot_x, var_ticks_x, var_inv_x = crear_bloque_eje(
+    (
+        var_col_x, var_label_x, var_rot_x, var_ticks_x,
+        var_inv_x, var_min_x, var_max_x
+    ) = crear_bloque_eje(
         vent_conf, "Variable X (Eje Horizontal)", columnas_disponibles,
-        "col_x", "label_x", "rot_x", "ticks_x", "inv_x", indice_fallback=0
+        "col_x", "label_x", "rot_x", "ticks_x", "inv_x",
+        "min_x", "max_x", indice_fallback=0
     )
-    var_col_y, var_label_y, var_rot_y, var_ticks_y, var_inv_y = crear_bloque_eje(
+
+    (
+        var_col_y, var_label_y, var_rot_y, var_ticks_y,
+        var_inv_y, var_min_y, var_max_y
+    ) = crear_bloque_eje(
         vent_conf, "Variable Y (Eje Vertical)", columnas_disponibles,
-        "col_y", "label_y", "rot_y", "ticks_y", "inv_y", indice_fallback=1
+        "col_y", "label_y", "rot_y", "ticks_y", "inv_y",
+        "min_y", "max_y", indice_fallback=1
     )
 
     btn_generar = tk.Button(
@@ -295,6 +337,8 @@ def abrir_config_grafico():
             var_rot_x.get(), var_ticks_x.get(), var_inv_x.get(),
             var_rot_y.get(), var_ticks_y.get(), var_inv_y.get(),
             var_tipo_grafico.get(),
+            var_min_x.get(), var_max_x.get(),
+            var_min_y.get(), var_max_y.get(),
             vent_conf
         ),
         relief=tk.FLAT, highlightthickness=2, highlightbackground='#999999',
@@ -304,7 +348,7 @@ def abrir_config_grafico():
 
 def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, color_hex,
                                    rot_x, ticks_x, inv_x, rot_y, ticks_y, inv_y,
-                                   tipo_grafico, vent_padre):
+                                   tipo_grafico, min_x, max_x, min_y, max_y, vent_padre):
     
     estado_grafico.update({
         "color": color_hex,
@@ -314,11 +358,15 @@ def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, c
         "rot_x": rot_x,
         "ticks_x": ticks_x,
         "inv_x": inv_x,
+        "min_x": min_x,
+        "max_x": max_x,
         "col_y": col_y,
         "label_y": label_y,
         "rot_y": rot_y,
         "ticks_y": ticks_y,
-        "inv_y": inv_y
+        "inv_y": inv_y,
+        "min_y": min_y,
+        "max_y": max_y
     })
 
     try:
@@ -356,6 +404,43 @@ def generar_grafico_personalizado(dfr, col_x, col_y, titulo, label_x, label_y, c
         n_ticks_y = parse_ticks(ticks_y)
         if n_ticks_y:
             ax.yaxis.set_major_locator(MaxNLocator(n_ticks_y))
+
+            try:
+        limites = {
+            "mínimo de X": min_x,
+            "máximo de X": max_x,
+            "mínimo de Y": min_y,
+            "máximo de Y": max_y
+        }
+
+        for nombre, valor in limites.items():
+            if valor.strip():
+                numero = float(valor)
+
+                if not np.isfinite(numero):
+                    raise ValueError(
+                        f"El campo «{nombre}» debe contener un número finito."
+                    )
+
+        if min_x.strip() and max_x.strip():
+            if float(min_x) >= float(max_x):
+                raise ValueError(
+                    "El mínimo de X debe ser inferior al máximo de X."
+                )
+
+        if min_y.strip() and max_y.strip():
+            if float(min_y) >= float(max_y):
+                raise ValueError(
+                    "El mínimo de Y debe ser inferior al máximo de Y."
+                )
+
+    except ValueError as e:
+        messagebox.showerror(
+            "Límites inválidos",
+            str(e),
+            parent=vent_padre
+        )
+        return
 
         if inv_x:
             ax.invert_xaxis()
