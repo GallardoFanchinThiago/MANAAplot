@@ -9,7 +9,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.ticker import MaxNLocator
 
-version = "v0.2-beta"
+version = "v0.3-beta"
 
 datos_memoria = {
     "crudo": None,
@@ -347,6 +347,22 @@ def abrir_config_grafico():
     )
     btn_generar.pack(fill=tk.X, padx=15, pady=15)
 
+def convertir_limite(valor, columna):
+    
+    if not valor or not valor.strip():
+        return None
+
+    if pd.api.types.is_datetime64_any_dtype(columna):
+        fecha = pd.to_datetime(valor, errors="raise")
+        return fecha
+
+    numero = float(valor)
+
+    if not np.isfinite(numero):
+        raise ValueError("El límite debe ser un número finito.")
+
+    return numero
+
 def generar_grafico_personalizado(
     dfr, col_x, col_y, titulo, label_x, label_y, color_hex,
     rot_x, ticks_x, inv_x, rot_y, ticks_y, inv_y,
@@ -354,38 +370,33 @@ def generar_grafico_personalizado(
 ):
     # 1. Validar los límites antes de cerrar la ventana de configuración.
     try:
-        limites = {
-            "mínimo de X": min_x,
-            "máximo de X": max_x,
-            "mínimo de Y": min_y,
-            "máximo de Y": max_y
-        }
+        limite_min_x = convertir_limite(min_x, dfr[col_x])
+        limite_max_x = convertir_limite(max_x, dfr[col_x])
+        limite_min_y = convertir_limite(min_y, dfr[col_y])
+        limite_max_y = convertir_limite(max_y, dfr[col_y])
 
-        for nombre, valor in limites.items():
-            if valor.strip():
-                numero = float(valor)
+        if (
+            limite_min_x is not None
+            and limite_max_x is not None
+            and limite_min_x >= limite_max_x
+        ):
+            raise ValueError(
+                "El mínimo de X debe ser anterior o inferior al máximo de X."
+            )
 
-                if not np.isfinite(numero):
-                    raise ValueError(
-                        f"El campo «{nombre}» debe contener un número finito."
-                    )
+        if (
+            limite_min_y is not None
+            and limite_max_y is not None
+            and limite_min_y >= limite_max_y
+        ):
+            raise ValueError(
+                "El mínimo de Y debe ser anterior o inferior al máximo de Y."
+            )
 
-        if min_x.strip() and max_x.strip():
-            if float(min_x) >= float(max_x):
-                raise ValueError(
-                    "El mínimo de X debe ser inferior al máximo de X."
-                )
-
-        if min_y.strip() and max_y.strip():
-            if float(min_y) >= float(max_y):
-                raise ValueError(
-                    "El mínimo de Y debe ser inferior al máximo de Y."
-                )
-
-    except ValueError as e:
+    except (ValueError, TypeError, OverflowError) as e:
         messagebox.showerror(
             "Límites inválidos",
-            str(e),
+            f"Comprueba los límites introducidos:\n{e}",
             parent=vent_padre
         )
         return
@@ -451,19 +462,18 @@ def generar_grafico_personalizado(
         if n_ticks_y:
             ax.yaxis.set_major_locator(MaxNLocator(n_ticks_y))
 
-        # 4. Aplicar límites manuales del eje X.
-        # Los campos vacíos conservan los límites automáticos.
-        if min_x.strip() or max_x.strip():
+        # Aplicar límites manuales del eje X.
+        if limite_min_x is not None or limite_max_x is not None:
             ax.set_xlim(
-                left=float(min_x) if min_x.strip() else None,
-                right=float(max_x) if max_x.strip() else None
+                left=limite_min_x,
+                right=limite_max_x
             )
 
-        # 5. Aplicar límites manuales del eje Y.
-        if min_y.strip() or max_y.strip():
+        # Aplicar límites manuales del eje Y.
+        if limite_min_y is not None or limite_max_y is not None:
             ax.set_ylim(
-                bottom=float(min_y) if min_y.strip() else None,
-                top=float(max_y) if max_y.strip() else None
+                bottom=limite_min_y,
+                top=limite_max_y
             )
 
         # 6. Invertir los ejes si se ha solicitado.
