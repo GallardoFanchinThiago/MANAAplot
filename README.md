@@ -5,7 +5,7 @@
 | Sistema operativo | Descarga |
 | - | - |
 | Linux (x86-64) | [Versión linux-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-linux-beta) |
-| Windows (x86-64 | [Versión windows-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-windows-beta.exe) |
+| Windows (x86-64) | [Versión windows-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-windows-beta.exe) |
 
 GUÍA PARA EL USUARIO
 1. Formato de archivos
