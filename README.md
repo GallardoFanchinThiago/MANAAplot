@@ -2,12 +2,22 @@
 
 *Medidor Automático de Nivel de Agua en Arroyos*
 
+DESCARGAS
 | Sistema operativo | Descarga |
 | - | - |
 | Linux (x86-64) | [Versión linux-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-linux-beta) |
 | Windows (x86-64) | [Versión windows-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-windows-beta.exe) |
 
-GUÍA PARA EL USUARIO
+INSTRUCCIÓN DE USO
+1. **Instalación:** En la sección DESCARGAS elegir la versión correspondiente a tu sistema operativo, instalarlo y ejecutar el archivo
+<p align=center> <img width="414" height="333" alt="image" src="https://github.com/user-attachments/assets/96e60fe9-cd30-411c-9674-d3795926d9fe" /> </p>
+
+2. **Abrir archivo:** Para abrir un archivo de datos presionar el botón "Elegir archivo", esto abre un buscador de archivos, elige manualmente un archivo.
+<img width="227" height="185" alt="image" src="https://github.com/user-attachments/assets/25ca2a56-b92a-4c75-8e5d-c039292bfa21" />
+
+3. **Procesar los datos:** Presione el botón "Crudo" y elija la opción "Procesado"
+
+
 1. Formato de archivos
    Formato txt: El archivo a introducir debe ser un .txt o .csv con las siguientes columnas en orden obligatorio independientemente del nombre: Fecha-hora (1), distancia (2),
    temperatura (3), presión atmosférica (4), altitud barométrica (5), y humedad relativa (6); con la siguiente estructura y nombres:
