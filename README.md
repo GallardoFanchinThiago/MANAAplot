@@ -8,6 +8,11 @@ DESCARGAS
 | Linux (x86-64) | [Versión linux-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-linux-beta) |
 | Windows (x86-64) | [Versión windows-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-windows-beta.exe) |
 
+| Archivo de muestra | Descarga |
+| - | - |
+| 10000 datos | []() |
+
+
 INSTRUCCIÓN DE USO
 1. **Instalación:** En la sección DESCARGAS elegir la versión correspondiente a tu sistema operativo, instalarlo y ejecutar el archivo
 <p align=center> <img width="414" height="333" alt="image" src="https://github.com/user-attachments/assets/96e60fe9-cd30-411c-9674-d3795926d9fe" /> </p>
