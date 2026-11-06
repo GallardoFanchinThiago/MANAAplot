@@ -8,9 +8,9 @@ DESCARGAS
 | Linux (x86-64) | [Versión linux-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-linux-beta) |
 | Windows (x86-64) | [Versión windows-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-windows-beta.exe) |
 
-| Archivo de muestra | Descarga |
+| Muestra | Descarga |
 | - | - |
-| 10000 datos | []() |
+| 10000 datos | [Archivo de prueba](datos_de_prueba.txt) |
 
 
 INSTRUCCIÓN DE USO
