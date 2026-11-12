@@ -20,7 +20,6 @@ jobs:
       - name: Descargar el código del repositorio
         uses: actions/checkout@v5
 
-      # Linux: utilizar Python y Tcl/Tk de Ubuntu 22.04.
       - name: Instalar Python y Tcl/Tk en Linux
         if: runner.os == 'Linux'
         run: |
@@ -35,7 +34,6 @@ jobs:
           python3 -m venv .venv
           echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
 
-      # Windows: utilizar Python 3.12.
       - name: Configurar Python 3.12 en Windows
         if: runner.os == 'Windows'
         uses: actions/setup-python@v6
@@ -63,7 +61,8 @@ jobs:
           subprocess.run([
               "pyi-makespec",
               "--noconsole",
-              "--onefile",
+              "--onedir",
+              "--noupx",
               "--hidden-import",
               "PIL._tkinter_finder",
               "manaaplot.py"
@@ -96,10 +95,14 @@ jobs:
           path: MANAAplot-Linux-x86_64.tar.gz
           if-no-files-found: error
 
+      - name: Empaquetar ejecutable Windows
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path dist\manaaplot\* -DestinationPath MANAAplot-Windows-x86_64.zip
+
       - name: Subir ejecutable Windows
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v7
         with:
           name: MANAAplot-Windows-x86_64
-          path: dist/*.exe
+          path: MANAAplot-Windows-x86_64.zip
           if-no-files-found: error
