@@ -5,8 +5,8 @@
 DESCARGAS
 | Sistema operativo | Descarga |
 | - | - |
-| Linux (x86-64) | [Versión linux-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-linux-beta) |
-| Windows (x86-64) | [Versión windows-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-windows-beta.exe) |
+| Linux (x86-64) | [Versión linux-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-linux-beta-x86_64.tar.gz) |
+| Windows (x86-64) | [Versión windows-v0.3-beta](https://github.com/GallardoFanchinThiago/MANAAplot/releases/download/v0.3-beta/manaaplot-v0.3-windows-beta-x86_64.zip) |
 | Muestra de 10000 datos | [Archivo de prueba](datos_de_prueba.txt) |
 
 INSTRUCCIÓN DE USO
