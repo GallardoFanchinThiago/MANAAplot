@@ -275,7 +275,7 @@ def abrir_config_grafico():
 
     vent_conf = tk.Toplevel(root)
     vent_conf.title("Configuración del Gráfico")
-    vent_conf.geometry("520x850")
+    vent_conf.geometry("548x869")
     vent_conf.minsize(520, 650)
     vent_conf.configure(bg="#F0F0F0")
     vent_conf.resizable(True, True)
