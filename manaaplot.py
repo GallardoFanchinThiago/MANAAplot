@@ -9,7 +9,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.ticker import MaxNLocator
 
-version = "v0.3-beta"
+version = "v0.3.1-beta"
 
 datos_memoria = {
     "crudo": None,
